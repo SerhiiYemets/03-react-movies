@@ -51,8 +51,6 @@ const App = () => {
     }
   };
 
-  const { movies, isLoading, error, selectedMovie } = state;
-
   return (
     <>
       <SearchBar onSubmit={handleSearch} />
