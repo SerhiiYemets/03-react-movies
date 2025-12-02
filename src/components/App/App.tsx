@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import SearchBar from "../SearchBar/SearchBar";
+import type { Movie } from "../../types/movie";
+import { fetchMovie } from "../../services/movieService"    
 
-function App() {
-  const [count, setCount] = useState(0)
+interface AppState {
+  movies: Movie[];
+  isLoading: boolean;
+  error: boolean;
+  selectedMovie: Movie | null;
+} 
+
+const App = () => {
+  const [state, setState] = useState<AppState>({
+    movies: [],
+    isLoading: false,
+    error: false,
+    selectedMovie: null,
+  });
+
+  const handleSearch = async (query: string) => {
+    setState((prev) => ({
+      ...prev,
+      isLoading: true,
+      error: false,
+      movies: [],
+    }));
+
+    try {
+      const movies = await fetchMovie(query);
+
+      if (movies.length === 0) {
+        toast.error("No movies found for your request.");
+      }
+
+      setState((prev) => ({
+        ...prev,
+        movies,
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      toast.error("Something went wrong. Try again.");
+      setState((prev) => ({
+        ...prev,
+        error: true,
+        isLoading: false,
+      }));
+    }
+  };
+
+  const { movies, isLoading, error, selectedMovie } = state;
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <SearchBar onSubmit={handleSearch} />
+      <Toaster position="top-right" />
     </>
-  )
-}
+  );
+};
 
-export default App
+
+export default App;
