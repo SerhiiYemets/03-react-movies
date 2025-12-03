@@ -3,7 +3,8 @@ import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import type { Movie } from "../../types/movie";
-import { fetchMovie } from "../../services/movieService"    
+import { fetchMovie } from "../../services/movieService"
+import MovieGrid from "../MovieGrid/MovieGrid";   
 
 interface AppState {
   movies: Movie[];
@@ -51,11 +52,27 @@ const App = () => {
     }
   };
 
-  const { movies, isLoading, error, selectedMovie } = state;
+  const { movies, isLoading, error, } = state;
+
+  const handleMovieSelect = (movie: Movie) => {
+    setState((prev) => ({
+      ...prev,
+      selectedMovie: movie,
+    }));
+  };
 
   return (
     <>
       <SearchBar onSubmit={handleSearch} />
+
+      <main>
+
+        {!isLoading && !error && movies.length > 0 && (
+          <MovieGrid movies={movies} onSelect={handleMovieSelect} />
+        )}
+
+      </main>
+
       <Toaster position="top-right" />
     </>
   );
