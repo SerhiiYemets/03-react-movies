@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
-import type { Movie } from "../../types/movie";
-import { fetchMovie } from "../../services/movieService"
 import MovieGrid from "../MovieGrid/MovieGrid"; 
 import Loader from "../Loader/loader";  
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import MovieModal from "../MovieModal/MovieModal";
+import type { Movie } from "../../types/movie";
+import { fetchMovie } from "../../services/movieService"
 
 interface AppState {
   movies: Movie[];
@@ -54,12 +55,19 @@ export default function App () {
     }
   };
 
-  const { movies, isLoading, error, } = state;
+  const { movies, isLoading, error, selectedMovie } = state;
 
   const handleMovieSelect = (movie: Movie) => {
     setState((prev) => ({
       ...prev,
       selectedMovie: movie,
+    }));
+  };
+
+  const handleModalClose = () => {
+    setState((prev) => ({
+      ...prev,
+      selectedMovie: null,
     }));
   };
 
@@ -77,9 +85,18 @@ export default function App () {
         
         {error && <ErrorMessage />}
 
+        {selectedMovie && (
+          <MovieModal movie={selectedMovie} onClose={handleModalClose} />
+        )}
+
       </main>
 
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
     </>
   );
 };
