@@ -4,7 +4,9 @@ import toast from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import type { Movie } from "../../types/movie";
 import { fetchMovie } from "../../services/movieService"
-import MovieGrid from "../MovieGrid/MovieGrid";   
+import MovieGrid from "../MovieGrid/MovieGrid"; 
+import Loader from "../Loader/loader";  
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 interface AppState {
   movies: Movie[];
@@ -13,7 +15,7 @@ interface AppState {
   selectedMovie: Movie | null;
 } 
 
-const App = () => {
+export default function App () {
   const [state, setState] = useState<AppState>({
     movies: [],
     isLoading: false,
@@ -70,6 +72,10 @@ const App = () => {
         {!isLoading && !error && movies.length > 0 && (
           <MovieGrid movies={movies} onSelect={handleMovieSelect} />
         )}
+        
+        {isLoading && <Loader />}
+        
+        {error && <ErrorMessage />}
 
       </main>
 
@@ -78,5 +84,3 @@ const App = () => {
   );
 };
 
-
-export default App;
